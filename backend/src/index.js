@@ -14,7 +14,7 @@ import userRoutes from './routes/users.js';
 import matchRoutes from './routes/matches.js';
 import messageRoutes from './routes/messages.js';
 import friendRoutes from './routes/friends.js';
-import uploadRoutes from './routes/upload.js'; // ✅ EK BAAR IMPORT
+import uploadRoutes from './routes/upload.js';
 
 // Import Models
 import Message from './models/Message.js';
@@ -22,7 +22,9 @@ import Match from './models/Match.js';
 import User from './models/User.js';
 
 const app = express();
-const httpServer = createServer(app);
+
+// ✅ Trust proxy (for Railway/Render etc.)
+app.set('trust proxy', 1);
 
 // CORS Configuration
 const allowedOrigins = process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173'];
@@ -47,6 +49,7 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '2mb' }));
 
 // Socket.IO Setup
+const httpServer = createServer(app);
 const io = new Server(httpServer, { 
   cors: { 
     origin: allowedOrigins, 
@@ -211,7 +214,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/friends', friendRoutes);
-app.use('/api/upload', uploadRoutes); // ✅ UPLOAD ROUTE
+app.use('/api/upload', uploadRoutes);
 
 // 404 Handler
 app.use((req, res) => {
@@ -255,9 +258,9 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => {
   console.log('✅ MongoDB connected successfully');
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`📝 Health check: http://localhost:${PORT}/api/health`);
+  httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
+    console.log(`📝 Health check: http://0.0.0.0:${PORT}/api/health`);
   });
 })
 .catch((e) => {
