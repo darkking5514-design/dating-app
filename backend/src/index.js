@@ -36,7 +36,7 @@ app.use(cors({
 // Security Middleware
 app.use(helmet());
 
-// Rate limiting - FIXED for proxy
+// ✅ Rate limiting - FIXED for proxy
 const limiter = rateLimit({ 
   windowMs: 60 * 1000,
   max: 500,
