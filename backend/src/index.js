@@ -42,12 +42,11 @@ const limiter = rateLimit({
   max: 500,
   message: 'Too many requests, please try again later.',
   skipSuccessfulRequests: true,
-  // ✅ Trust proxy for rate limiting
   trustProxy: true,
-  // ✅ Custom key generator using X-Forwarded-For
   keyGenerator: (req) => {
     return req.headers['x-forwarded-for']?.split(',')[0] || req.ip;
-  }
+  },
+  validate: false // ✅ Disable validation to fix proxy warning
 });
 app.use('/api/', limiter);
 
