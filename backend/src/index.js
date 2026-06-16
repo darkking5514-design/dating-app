@@ -36,12 +36,18 @@ app.use(cors({
 // Security Middleware
 app.use(helmet());
 
-// Rate limiting
+// Rate limiting - FIXED for proxy
 const limiter = rateLimit({ 
   windowMs: 60 * 1000,
   max: 500,
   message: 'Too many requests, please try again later.',
-  skipSuccessfulRequests: true
+  skipSuccessfulRequests: true,
+  // ✅ Trust proxy for rate limiting
+  trustProxy: true,
+  // ✅ Custom key generator using X-Forwarded-For
+  keyGenerator: (req) => {
+    return req.headers['x-forwarded-for']?.split(',')[0] || req.ip;
+  }
 });
 app.use('/api/', limiter);
 
